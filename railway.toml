@@ -1,0 +1,20 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "frontend/Dockerfile"
+
+[[services]]
+name = "frontend"
+startCommand = "yarn start"
+port = 3000
+
+[[services]]
+name = "backend"
+dockerfilePath = "backend/Dockerfile"
+startCommand = "node index.js"
+port = 5001
+envVars = [
+  "NODE_ENV=production",
+  "PORT=5001",
+  "MYSQL_DATABASE=service_db",
+  "MYSQL_TABLE=products"
+]
