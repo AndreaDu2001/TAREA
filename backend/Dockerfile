@@ -7,10 +7,10 @@ WORKDIR /app
 # for debugging purpose
 # apk add --update --no-cache busybox-extras curl
 
-# copying package & yarn files and installing dependecies
+# copying package & npm files and installing dependecies
 COPY package.json .
-COPY yarn.lock .
-RUN yarn install
+COPY package-lock.json .
+RUN npm install --production
 
 # copying rest of the files
 COPY . .
