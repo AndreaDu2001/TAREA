@@ -38,18 +38,15 @@ services:
       - key: REDIS_CHANNEL
         value: channel1
       - key: MYSQL_HOST
-        fromService:
-          name: tarea-mysql
-          type: mysql
-          property: host
+        value: ${MYSQL_HOST}
       - key: MYSQL_PORT
-        value: 3306
+        value: ${MYSQL_PORT}
       - key: MYSQL_DATABASE
         value: service_db
       - key: MYSQL_USERNAME
-        value: root
+        value: ${MYSQL_USERNAME}
       - key: MYSQL_PASSWORD
-        sync: false
+        value: ${MYSQL_PASSWORD}
       - key: MYSQL_TABLE
         value: products
     routes:
@@ -78,33 +75,18 @@ services:
       - key: REDIS_CHANNEL
         value: channel1
       - key: MYSQL_HOST
-        fromService:
-          name: tarea-mysql
-          type: mysql
-          property: host
+        value: ${MYSQL_HOST}
       - key: MYSQL_PORT
-        value: 3306
+        value: ${MYSQL_PORT}
       - key: MYSQL_DATABASE
         value: service_db
       - key: MYSQL_USERNAME
-        value: root
+        value: ${MYSQL_USERNAME}
       - key: MYSQL_PASSWORD
-        sync: false
+        value: ${MYSQL_PASSWORD}
       - key: MYSQL_TABLE
         value: products
     autoDeploy: true
-
-  # MySQL Database
-  - type: mysql
-    name: tarea-mysql
-    version: "8.0"
-    ipAllowList: []
-    envVars:
-      - key: MYSQL_ROOT_PASSWORD
-        sync: false
-      - key: MYSQL_DATABASE
-        value: service_db
-    backupRetention: 7
 
   # Redis Cache & Message Broker
   - type: redis
