@@ -3,20 +3,22 @@ services:
   - type: web
     name: tarea-frontend
     runtime: node
-    buildCommand: cd frontend && yarn install && yarn build
-    startCommand: cd frontend && yarn start
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && node server.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        value: https://tarea-backend-production.onrender.com
     autoDeploy: true
 
   # Backend - Express API
   - type: web
     name: tarea-backend
     runtime: node
-    buildCommand: cd backend && yarn install && node init-db.js
+    buildCommand: cd backend && npm install
     startCommand: cd backend && node index.js
     envVars:
       - key: NODE_ENV
