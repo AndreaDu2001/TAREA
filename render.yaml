@@ -58,7 +58,7 @@ services:
     autoDeploy: true
 
   # Worker Server - Background Processing
-  - type: background_worker
+  - type: worker
     name: tarea-worker
     runtime: node
     buildCommand: cd worker-server && yarn install
