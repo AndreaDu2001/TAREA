@@ -1,15 +1,16 @@
-[build]
-builder = "dockerfile"
-dockerfilePath = "frontend/Dockerfile"
-
 [[services]]
 name = "frontend"
-startCommand = "yarn start"
+builder = "dockerfile"
+dockerfilePath = "frontend/Dockerfile"
+buildContext = "frontend"
+startCommand = "node server.js"
 port = 3000
 
 [[services]]
 name = "backend"
+builder = "dockerfile"
 dockerfilePath = "backend/Dockerfile"
+buildContext = "backend"
 startCommand = "node index.js"
 port = 5001
 envVars = [
