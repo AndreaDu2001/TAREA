@@ -4,7 +4,7 @@ import axios from "axios";
 export default function Home() {
   const [value, updateValue] = useState("create new data");
   const [input, setInput] = useState("");
-  const baseUrl = "http://localhost:5001";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
   const getDataUrl = `${baseUrl}/data`;
   const createDataUrl = `${baseUrl}/create`;
 

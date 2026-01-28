@@ -1,0 +1,117 @@
+services:
+  # Frontend - Next.js
+  - type: web
+    name: tarea-frontend
+    runtime: node
+    buildCommand: cd frontend && yarn install && yarn build
+    startCommand: cd frontend && yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    routes:
+      - path: /
+        destination: http://localhost:3000
+    autoDeploy: true
+
+  # Backend - Express API
+  - type: web
+    name: tarea-backend
+    runtime: node
+    buildCommand: cd backend && yarn install && node init-db.js
+    startCommand: cd backend && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: REDIS_HOST
+        fromService:
+          name: tarea-redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        value: 6379
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_CHANNEL
+        value: channel1
+      - key: MYSQL_HOST
+        fromService:
+          name: tarea-mysql
+          type: mysql
+          property: host
+      - key: MYSQL_PORT
+        value: 3306
+      - key: MYSQL_DATABASE
+        value: service_db
+      - key: MYSQL_USERNAME
+        value: root
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_TABLE
+        value: products
+    routes:
+      - path: /
+        destination: http://localhost:5001
+    autoDeploy: true
+
+  # Worker Server - Background Processing
+  - type: background_worker
+    name: tarea-worker
+    runtime: node
+    buildCommand: cd worker-server && yarn install
+    startCommand: cd worker-server && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_HOST
+        fromService:
+          name: tarea-redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        value: 6379
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_CHANNEL
+        value: channel1
+      - key: MYSQL_HOST
+        fromService:
+          name: tarea-mysql
+          type: mysql
+          property: host
+      - key: MYSQL_PORT
+        value: 3306
+      - key: MYSQL_DATABASE
+        value: service_db
+      - key: MYSQL_USERNAME
+        value: root
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_TABLE
+        value: products
+    autoDeploy: true
+
+  # MySQL Database
+  - type: mysql
+    name: tarea-mysql
+    version: "8.0"
+    ipAllowList: []
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        value: service_db
+    backupRetention: 7
+
+  # Redis Cache & Message Broker
+  - type: redis
+    name: tarea-redis
+    plan: starter
+    maxmemory_policy: allkeys-lru
+    ipAllowList: []
+    envVars:
+      - key: REDIS_PASSWORD
+        sync: false

@@ -1,4 +1,5 @@
-USE railway;
+CREATE DATABASE IF NOT EXISTS service_db;
+USE service_db;
 
 DROP TABLE IF EXISTS products;
 
