@@ -39,32 +39,73 @@ const getData = async () => {
   const sqlConnection = await mysql.createConnection(dbConfig);
   return sqlConnection.execute(sqlQuery);
 };
+// Redis helpers made tolerant if no redis configured or connection fails
+const safeRedisConnect = async () => {
+  if (!redisHost) return false;
+  try {
+    if (!redisClient.isOpen) await redisClient.connect();
+    return true;
+  } catch (err) {
+    console.log("Redis connect error:", err && err.message ? err.message : err);
+    return false;
+  }
+};
 
 const setRedisCache = async (jsonData) => {
-  const value = JSON.stringify({ isCached: "yes", data: jsonData });
-  await redisClient.connect();
-  await redisClient.set("key", value);
-  return redisClient.disconnect();
+  try {
+    const ok = await safeRedisConnect();
+    if (!ok) return null;
+    const value = JSON.stringify({ isCached: "yes", data: jsonData });
+    await redisClient.set("key", value);
+    await redisClient.disconnect();
+    return true;
+  } catch (err) {
+    console.log("setRedisCache error:", err && err.message ? err.message : err);
+    try { await redisClient.disconnect(); } catch (e) {}
+    return null;
+  }
 };
 
 const getRedisCache = async () => {
-  await redisClient.connect();
-  const cachedData = await redisClient.get("key");
-  await redisClient.disconnect();
-  return cachedData;
+  try {
+    const ok = await safeRedisConnect();
+    if (!ok) return null;
+    const cachedData = await redisClient.get("key");
+    await redisClient.disconnect();
+    return cachedData;
+  } catch (err) {
+    console.log("getRedisCache error:", err && err.message ? err.message : err);
+    try { await redisClient.disconnect(); } catch (e) {}
+    return null;
+  }
 };
 
 const deleteRedisCache = async () => {
-  await redisClient.connect();
-  await redisClient.del("key");
-  return redisClient.disconnect();
+  try {
+    const ok = await safeRedisConnect();
+    if (!ok) return null;
+    await redisClient.del("key");
+    await redisClient.disconnect();
+    return true;
+  } catch (err) {
+    console.log("deleteRedisCache error:", err && err.message ? err.message : err);
+    try { await redisClient.disconnect(); } catch (e) {}
+    return null;
+  }
 };
 
 const publishToRedis = async (data) => {
-  await redisClient.connect();
-  const subscriberCount = await redisClient.publish(redisChannel, data);
-  await redisClient.disconnect();
-  return subscriberCount;
+  try {
+    const ok = await safeRedisConnect();
+    if (!ok) return 0;
+    const subscriberCount = await redisClient.publish(redisChannel, data);
+    await redisClient.disconnect();
+    return subscriberCount;
+  } catch (err) {
+    console.log("publishToRedis error:", err && err.message ? err.message : err);
+    try { await redisClient.disconnect(); } catch (e) {}
+    return 0;
+  }
 };
 
 //express
