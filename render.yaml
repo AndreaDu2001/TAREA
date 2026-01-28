@@ -23,17 +23,6 @@ services:
         value: production
       - key: PORT
         value: 5001
-      - key: REDIS_HOST
-        fromService:
-          name: tarea-redis
-          type: redis
-          property: host
-      - key: REDIS_PORT
-        value: 6379
-      - key: REDIS_PASSWORD
-        sync: false
-      - key: REDIS_CHANNEL
-        value: channel1
       - key: MYSQL_HOST
         value: ${MYSQL_HOST}
       - key: MYSQL_PORT
@@ -47,43 +36,3 @@ services:
       - key: MYSQL_TABLE
         value: products
     autoDeploy: true
-
-  # Worker Server - Background Processing
-  - type: worker
-    name: tarea-worker
-    runtime: node
-    buildCommand: cd worker-server && yarn install
-    startCommand: cd worker-server && node index.js
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: REDIS_HOST
-        fromService:
-          name: tarea-redis
-          type: redis
-          property: host
-      - key: REDIS_PORT
-        value: 6379
-      - key: REDIS_PASSWORD
-        sync: false
-      - key: REDIS_CHANNEL
-        value: channel1
-      - key: MYSQL_HOST
-        value: ${MYSQL_HOST}
-      - key: MYSQL_PORT
-        value: ${MYSQL_PORT}
-      - key: MYSQL_DATABASE
-        value: service_db
-      - key: MYSQL_USERNAME
-        value: ${MYSQL_USERNAME}
-      - key: MYSQL_PASSWORD
-        value: ${MYSQL_PASSWORD}
-      - key: MYSQL_TABLE
-        value: products
-    autoDeploy: true
-
-  # Redis Cache & Message Broker
-  - type: redis
-    name: tarea-redis
-    plan: starter
-    ipAllowList: []
