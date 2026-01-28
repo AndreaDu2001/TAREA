@@ -5,11 +5,11 @@ FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
-# Copying package.json and yarn.lock and installing node modules
+# Copying package.json and package-lock.json and installing node modules
 # This helps caching the modules
 COPY ./package.json .
-COPY ./yarn.lock .
-RUN yarn install --frozen-lockfile --prod 
+COPY ./package-lock.json .
+RUN npm install --production 
 
 
 
@@ -20,7 +20,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
-RUN yarn build
+RUN npm run build
 
 
 # 3. Setting up the production image
