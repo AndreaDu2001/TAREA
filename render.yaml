@@ -10,9 +10,6 @@ services:
         value: production
       - key: PORT
         value: 3000
-    routes:
-      - path: /
-        destination: http://localhost:3000
     autoDeploy: true
 
   # Backend - Express API
@@ -49,9 +46,6 @@ services:
         value: ${MYSQL_PASSWORD}
       - key: MYSQL_TABLE
         value: products
-    routes:
-      - path: /
-        destination: http://localhost:5001
     autoDeploy: true
 
   # Worker Server - Background Processing
@@ -92,8 +86,4 @@ services:
   - type: redis
     name: tarea-redis
     plan: starter
-    maxmemory_policy: allkeys-lru
     ipAllowList: []
-    envVars:
-      - key: REDIS_PASSWORD
-        sync: false
